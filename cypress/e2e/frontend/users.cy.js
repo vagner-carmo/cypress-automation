@@ -8,7 +8,7 @@ describe('Users front-end', () => {
         const usuario = {
             nome: faker.person.fullName(),
             email: faker.internet.email(),
-            senha: '123456',
+            senha: faker.string.numeric(8),
             administrador: true
         }
 

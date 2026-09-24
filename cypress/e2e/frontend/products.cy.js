@@ -1,5 +1,7 @@
 import { faker } from '@faker-js/faker'
 
+import ProductsApi from '../../api/ProductsApi'
+import { createProduct } from '../../factories/productFactory'
 import ProductRegisterPage from '../../pages/ProductRegister/productRegisterPage'
 
 describe('Products front-end', () => {
@@ -54,16 +56,23 @@ describe('Products front-end', () => {
 
     it('Should not create a product with an existing name', () => {
 
-        const product = {
-            nome: 'Logitech MX Vertical',
-            preco: 450,
-            descricao: 'Mouse Logitech MX Vertical',
-            quantidade: 10
-        }
+        const product = createProduct()
 
-        ProductRegisterPage.cadastrarProduto(product)
+        cy.getAccessToken()
+            .then((token) => {
 
-        ProductRegisterPage.validarMensagem('Já existe produto com esse nome')
+                return ProductsApi.create(product, token)
+
+            })
+            .then((response) => {
+
+                expect(response.status).to.eq(201)
+
+                ProductRegisterPage.cadastrarProduto(product)
+
+                ProductRegisterPage.validarMensagem('Já existe produto com esse nome')
+
+            })
 
     })
 
