@@ -5,6 +5,7 @@ import { loginErrorInvalidCredentialSchema } from '../../schemas/login/loginErro
 import { loginErrorEmptyCredentialSchema } from '../../schemas/login/loginErrorEmptyCredential.schema'
 import { validateSchema } from '../../support/schemaValidator'
 import { createUser } from '../../factories/userFactory'
+import { faker } from '@faker-js/faker'
 
 describe('Login API', () => {
 
@@ -43,8 +44,8 @@ describe('Login API', () => {
 
         const credentials = {
 
-            email: 'admin@qa.com',
-            password: '12377'
+            email: faker.internet.email(),
+            password: faker.string.numeric(8)
 
         }
 

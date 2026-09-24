@@ -1,4 +1,3 @@
-import LoginApi from '../../api/LoginApi'
 import ProductsApi from '../../api/ProductsApi'
 import CartsApi from '../../api/CartsApi'
 import { validateSchema } from '../../support/schemaValidator'
@@ -10,6 +9,7 @@ import { getProductSchema } from '../../schemas/products/getProduct.schema'
 import { deleteProductSuccessSchema } from '../../schemas/products/deleteProductSuccess.schema'
 import { deleteProductShoppingCarErrorSchema } from '../../schemas/products/deleteProductShoppingCarError.schema'
 import { updateProductSuccessSchema } from '../../schemas/products/updateProductSuccess.schema'
+import { faker } from '@faker-js/faker'
 
 
 describe('Products API', () => {
@@ -43,25 +43,32 @@ describe('Products API', () => {
 
     it('Should not create a product with an existing name', () => {
 
-        const product = {
-
-            nome: 'Logitech MX Vertical',
-            preco: 470,
-            descricao: 'Mouse Logitech MX Vertical',
-            quantidade: 15
-
-        }
+        const product = createProduct()
 
         cy.getAccessToken()
             .then((token) => {
 
                 ProductsApi.create(
                     product,
-                    token,
-                    {
-                        failOnStatusCode: false
-                    }
+                    token
                 )
+                    .then((createResponse) => {
+
+                        expect(createResponse.status).to.eq(201)
+                        validateSchema(
+                            createProductSuccessSchema,
+                            createResponse.body
+                        )
+
+                        return ProductsApi.create(
+                            product,
+                            token,
+                            {
+                                failOnStatusCode: false
+                            }
+                        )
+
+                    })
                     .then((response) => {
 
                         expect(response.status).to.eq(400)
@@ -170,7 +177,7 @@ describe('Products API', () => {
 
     it('Should not retrieve a product with an invalid id', () => {
 
-        const invalidProductId = '1234567890123abc'
+        const invalidProductId = `${faker.string.numeric(13)}abc`
 
         ProductsApi.getById(
             invalidProductId,
@@ -305,7 +312,7 @@ describe('Products API', () => {
 
     it('Should not delete a product with an invalid access token', () => {
 
-        const productId = 'K6leHdftCeOJj8BJ'
+        const productId = faker.string.numeric(16)
 
         ProductsApi.delete(
             productId,
@@ -398,6 +405,7 @@ describe('Products API', () => {
     it('Should not update a product with an existing name', () => {
 
         const product = createProduct()
+        const existingProduct = createProduct()
 
         cy.getAccessToken().then((token) => {
 
@@ -411,19 +419,26 @@ describe('Products API', () => {
                         createResponse.body
                     )
 
-                    const updatedProduct = {
-                        ...product,
-                        nome: 'Logitech MX Vertical'
-                    }
+                    return ProductsApi.create(existingProduct, token)
+                        .then((existingProductResponse) => {
 
-                    ProductsApi.update(
-                        createResponse.body._id,
-                        updatedProduct,
-                        token,
-                        {
-                            failOnStatusCode: false
-                        }
-                    )
+                            expect(existingProductResponse.status).to.eq(201)
+
+                            const updatedProduct = {
+                                ...product,
+                                nome: existingProduct.nome
+                            }
+
+                            return ProductsApi.update(
+                                createResponse.body._id,
+                                updatedProduct,
+                                token,
+                                {
+                                    failOnStatusCode: false
+                                }
+                            )
+
+                        })
                         .then((response) => {
 
                             expect(response.status).to.eq(400)

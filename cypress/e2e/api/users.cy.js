@@ -12,6 +12,7 @@ import { deleteUserSuccessSchema } from '../../schemas/users/deleteUserSuccess.s
 import { userErrorSchema } from '../../schemas/users/userError.schema'
 import { deleteUserShoppingCarErrorSchema } from '../../schemas/users/deleteUserShoppingCarError.schema'
 import { createProduct } from '../../factories/productFactory'
+import { faker } from '@faker-js/faker'
 
 
 describe('Users API', () => {
@@ -40,16 +41,22 @@ describe('Users API', () => {
 
     it('Should not create a user with duplicated email', () => {
 
-        const user = {
-            nome: 'Fulano',
-            email: 'fulano@qa.com',
-            password: 'teste',
-            administrador: 'true'
-        }
+        const user = createUser()
 
-        UsersApi.create(user, {
-            failOnStatusCode: false
-        })
+        UsersApi.create(user)
+            .then((createResponse) => {
+
+                expect(createResponse.status).to.eq(201)
+                validateSchema(
+                    createUserSuccessSchema,
+                    createResponse.body
+                )
+
+                return UsersApi.create(user, {
+                    failOnStatusCode: false
+                })
+
+            })
             .then((response) => {
 
                 expect(response.status).to.eq(400)
@@ -127,7 +134,7 @@ describe('Users API', () => {
 
     it('Should not retrieve a user with an invalid id', () => {
 
-        const invalidUserId = '0123456789102abc'
+        const invalidUserId = faker.string.numeric(16)
 
         UsersApi.getById(invalidUserId, {
             failOnStatusCode: false
@@ -165,7 +172,7 @@ describe('Users API', () => {
 
                 const updatedUser = {
                     ...user,
-                    nome: 'Usuário Atualizado'
+                    nome: `${user.nome} Updated`
                 }
 
                 UsersApi.update(
@@ -203,6 +210,7 @@ describe('Users API', () => {
     it('Should not update a user with an existing email', () => {
 
         const user = createUser()
+        const existingUser = createUser()
 
         UsersApi.create(user)
             .then((createResponse) => {
@@ -214,18 +222,30 @@ describe('Users API', () => {
                     createResponse.body
                 )
 
-                const updatedUser = {
-                    ...user,
-                    email: 'fulano@qa.com'
-                }
+                return UsersApi.create(existingUser)
+                    .then((existingUserResponse) => {
 
-                UsersApi.update(
-                    createResponse.body._id,
-                    updatedUser,
-                    {
-                        failOnStatusCode: false
-                    }
-                )
+                        expect(existingUserResponse.status).to.eq(201)
+
+                        validateSchema(
+                            createUserSuccessSchema,
+                            existingUserResponse.body
+                        )
+
+                        const updatedUser = {
+                            ...user,
+                            email: existingUser.email
+                        }
+
+                        return UsersApi.update(
+                            createResponse.body._id,
+                            updatedUser,
+                            {
+                                failOnStatusCode: false
+                            }
+                        )
+
+                    })
                     .then((response) => {
 
                         expect(response.status).to.eq(400)

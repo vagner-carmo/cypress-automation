@@ -1,4 +1,5 @@
 import LoginPage from '../../pages/Login/LoginPage'
+import { faker } from '@faker-js/faker'
 
 
 describe('Login', () => {
@@ -33,8 +34,8 @@ describe('Login', () => {
         LoginPage.acessarPagina()
 
         LoginPage.realizarLogin(
-            'teste@teste.com',
-            'teste777'
+            faker.internet.email(),
+            faker.string.numeric(8)
         )
 
         LoginPage.validarMensagemErro('Email e/ou senha inválidos')
