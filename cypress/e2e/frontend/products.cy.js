@@ -1,28 +1,28 @@
 import { faker } from '@faker-js/faker'
 
-import LoginPage from '../../pages/Login/LoginPage'
 import ProductRegisterPage from '../../pages/ProductRegister/productRegisterPage'
 
 describe('Products front-end', () => {
 
     let user
 
-    beforeEach(() => {
+    before(() => {
 
         cy.createUser().then(createdUser => {
 
             user = createdUser
 
-            LoginPage.acessarPagina()
-
-            LoginPage.realizarLogin(
-                user.email,
-                user.password
-            )
-
-            ProductRegisterPage.acessarPagina()
-            
         })
+
+    })
+
+    beforeEach(() => {
+
+        cy.loginWithSession(user)
+
+        cy.visit('admin/home')
+
+        ProductRegisterPage.acessarPagina()
 
     })
 
