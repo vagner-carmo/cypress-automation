@@ -1,6 +1,7 @@
 import LoginApi from '../api/LoginApi'
 import UsersApi from '../api/UsersApi'
 import { createUser } from '../factories/userFactory'
+import LoginPage from '../pages/Login/LoginPage'
 
 Cypress.Commands.add('getAccessToken', () => {
 
@@ -10,13 +11,13 @@ Cypress.Commands.add('getAccessToken', () => {
             email: user.email,
             password: user.password
         })
-        .then(response => {
+            .then(response => {
 
-            expect(response.status).to.eq(200)
+                expect(response.status).to.eq(200)
 
-            return response.body.authorization
+                return response.body.authorization
 
-        })
+            })
 
     })
 
@@ -37,5 +38,22 @@ Cypress.Commands.add('createUser', () => {
             }
 
         })
+
+})
+
+Cypress.Commands.add('loginWithSession', (user) => {
+
+    cy.session('login-session', () => {
+
+        LoginPage.acessarPagina()
+
+        LoginPage.realizarLogin(
+            user.email,
+            user.password
+        )
+
+        LoginPage.validarLoginComSucesso(user.nome)
+
+    })
 
 })
