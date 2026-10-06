@@ -1,229 +1,299 @@
 # Cypress Automation Challenge
 
-Projeto de automação de testes desenvolvido utilizando **Cypress** e **JavaScript**, contemplando testes End-to-End e testes de API para a aplicação **ServeRest**.
+Automated testing project developed with **Cypress** and **JavaScript**, covering **web end-to-end (E2E)** and **API testing** for the [ServeRest](https://serverest.dev/) application.
 
-## Tecnologias utilizadas
+The project was built as a QA automation portfolio project, with a focus on maintainability, test independence, reusable components, API contract validation, and realistic test scenarios.
 
-* Cypress
-* JavaScript (ES6+)
-* Node.js
-* AJV (JSON Schema Validator)
-* Faker.js
+## 🎯 Project Goals
 
-## Aplicação
+- Automate critical web application flows.
+- Validate REST API endpoints and business rules.
+- Cover positive and negative scenarios.
+- Keep tests independent from pre-existing test data.
+- Apply reusable automation patterns and good practices.
+- Demonstrate a maintainable Cypress project structure.
 
-**Frontend**
+## 🛠️ Technologies
+
+- **Cypress**
+- **JavaScript (ES6+)**
+- **Node.js**
+- **AJV** — JSON Schema validation
+- **Faker.js** — dynamic test data generation
+- **REST API**
+- **Page Object Model (POM)**
+
+## 🌐 Application Under Test
+
+### Frontend
 
 https://front.serverest.dev/
 
-**API**
+### API
 
 https://serverest.dev/
 
----
-
-## Estrutura do projeto
+## 📁 Project Structure
 
 ```text
-cypress
-├── api
+cypress/
+├── api/
 │   ├── LoginApi.js
 │   ├── ProductsApi.js
-│   └── UsersApi.js
+│   ├── UsersApi.js
+│   └── CartsApi.js
 │
-├── e2e
-│   ├── api
-│   └── frontend
+├── e2e/
+│   ├── api/
+│   └── frontend/
 │
-├── factories
+├── factories/
 │   ├── productFactory.js
 │   └── userFactory.js
 │
-├── fixtures
-│   ├── imagens
+├── fixtures/
+│   └── imagens/
 │
-├── pages
-│   ├── Login
-│   ├── ProductRegister
-│   ├── UserRegister
+├── pages/
+│   ├── Login/
+│   ├── ProductRegister/
+│   └── UserRegister/
 │
-├── schemas
-│   ├── login
-│   ├── products
-│   └── users
+├── schemas/
+│   ├── common/
+│   ├── login/
+│   ├── products/
+│   └── users/
 │
-└── support
+└── support/
     ├── commands.js
     └── schemaValidators.js
 ```
 
----
+## 🧩 Automation Architecture
 
-## Padrões adotados
+The project follows a layered structure to keep test logic separated and reusable.
 
-O projeto foi estruturado utilizando boas práticas de automação de testes:
+### Page Object Model
 
-* Page Object Model (POM)
-* API Layer para centralização das chamadas REST
-* Factory Pattern para geração de dados
-* JSON Schema Validation utilizando AJV
-* Custom Commands do Cypress
-* Separação entre Frontend e API
-* Código reutilizável e de fácil manutenção
+The Page Object Model encapsulates page interactions and keeps selectors and UI behavior outside the test specifications.
 
----
+### API Layer
 
-## Pré-requisitos
+API classes centralize REST requests, making endpoint interactions reusable across different test scenarios.
 
-- Node.js 18 ou superior
-- npm 9 ou superior (ou yarn)
+### Factory Pattern
+
+Factories generate dynamic test data using Faker, reducing dependencies on static data and avoiding conflicts between test executions.
+
+### JSON Schema Validation
+
+API responses are validated using **AJV** and JSON Schema to verify response contracts in addition to status codes and business validations.
+
+### Custom Commands
+
+Reusable Cypress commands encapsulate common operations such as creating users and obtaining authentication tokens.
+
+### Test Data Independence
+
+Tests prepare their own required data whenever possible instead of depending on records already available in the environment.
+
+For example, scenarios involving authenticated users, products, or shopping carts can create the required data before executing the behavior under test.
+
+### Retry-ability
+
+The UI tests take advantage of Cypress's built-in retry-ability through assertions such as:
+
+```javascript
+cy.get(locator)
+    .should('be.visible')
+    .click()
+```
+
+This reduces unnecessary fixed waits and improves test stability.
+
+## 🔧 Prerequisites
+
+Before running the project, make sure you have installed:
+
+- Node.js 18 or higher
+- npm 9 or higher
 - Git
 
----
+## 🚀 Installation
 
-## Instalação
-
-Clone o repositório:
+Clone the repository:
 
 ```bash
-git clone <URL_DO_REPOSITORIO>
+git clone https://github.com/vagner-carmo/cypress-automation.git
 ```
 
-Acesse a pasta do projeto:
+Navigate to the project directory:
 
 ```bash
-cd <NOME_DO_PROJETO>
+cd cypress-automation
 ```
 
-Instale todas as dependências do projeto:
+Install the project dependencies:
 
 ```bash
 npm install
 ```
 
-> O comando acima instalará automaticamente todas as dependências definidas no `package.json`, incluindo:
->
-> * Cypress
-> * @faker-js/faker
-> * AJV
+The command above installs the dependencies defined in `package.json`, including:
 
-Caso deseje instalar manualmente:
+- Cypress
+- Faker.js
+- AJV
 
-```bash
-npm install cypress --save-dev
-npm install @faker-js/faker --save-dev
-npm install ajv --save-dev
-```
+## ▶️ Running the Tests
 
----
+### Open Cypress
 
-## Executando os testes
-
-Abrir o Cypress:
+Launch the Cypress interactive interface:
 
 ```bash
 npx cypress open
 ```
 
-Executar todos os testes:
+### Run all tests
 
 ```bash
 npx cypress run
 ```
 
-Executar apenas os testes de Frontend:
+### Run frontend tests
 
 ```bash
 npx cypress run --spec "cypress/e2e/frontend/**/*.cy.js"
 ```
 
-Executar apenas os testes de API:
+### Run API tests
 
 ```bash
 npx cypress run --spec "cypress/e2e/api/**/*.cy.js"
 ```
 
----
-
-## Cobertura dos testes
+## 🧪 Test Coverage
 
 ### Frontend
 
 #### Login
 
-* Login com sucesso
-* Tentativa de login com credenciais inválidas
-* Tentativa de login com campos obrigatórios em branco
+- Successful login
+- Login with invalid credentials
+- Login with required fields empty
 
-#### Cadastro de Usuários
+#### User Registration
 
-* Cadastro realizado com sucesso
-* Tentativa de cadastro com e-mail já existente
+- Successful user registration
+- Registration with an existing email
 
-#### Cadastro de Produtos
+#### Product Registration
 
-* Cadastro realizado com sucesso
-* Tentativa de cadastro com campos obrigatórios em branco
-* Tentativa de cadastro com nome de produto já existente
-
----
+- Successful product registration
+- Registration with required fields empty
+- Registration with an existing product name
 
 ### API
 
-#### Login
+#### Authentication
 
-* Login com sucesso
-* Tentativa de login com credenciais inválidas
-* Tentativa de login com campos obrigatórios em branco
+- Successful login
+- Login with invalid credentials
+- Login with required fields empty
 
-#### Usuários
+#### Users
 
-* Criar usuário com sucesso
-* Tentativa de criar usuário com e-mail duplicado
-* Listar usuários com sucesso
-* Buscar usuário por ID com sucesso
-* Tentativa de buscar usuário com ID inexistente
-* Atualizar usuário com sucesso
-* Tentativa de atualizar usuário utilizando e-mail já existente
-* Excluir usuário com sucesso
-* Tentativa de excluir usuário com ID inexistente
+- Create user successfully
+- Attempt to create a user with a duplicated email
+- Get all users
+- Get user by ID
+- Attempt to get a user with an invalid ID
+- Update user successfully
+- Attempt to update a user using an existing email
+- Delete user successfully
+- Attempt to delete a user with an invalid ID
+- Attempt to delete a user associated with a shopping cart
 
-#### Produtos
+#### Products
 
-* Criar produto com sucesso
-* Tentativa de criar produto com nome já existente
-* Tentativa de criar produto com token inválido
-* Listar produtos com sucesso
-* Buscar produto por ID com sucesso
-* Tentativa de buscar produto inexistente
-* Excluir produto com sucesso
-* Tentativa de excluir produto associado a um carrinho
-* Tentativa de excluir produto com token inválido
-* Atualizar produto com sucesso
-* Tentativa de atualizar produto utilizando nome já existente
-* Tentativa de atualizar produto com token inválido
+- Create product successfully
+- Attempt to create a product with an existing name
+- Attempt to create a product with an invalid token
+- Get all products
+- Get product by ID
+- Attempt to get a product with an invalid ID
+- Delete product successfully
+- Attempt to delete a product associated with a shopping cart
+- Attempt to delete a product with an invalid token
+- Update product successfully
+- Attempt to update a product using an existing name
+- Attempt to update a product with an invalid token
+
+## 📋 API Validation Strategy
+
+The API tests validate different aspects of the response:
+
+- HTTP status code
+- Response headers
+- Response body
+- Business messages
+- Authentication behavior
+- JSON response structure
+- JSON Schema contract
+
+Schema validation is used to avoid duplicating structural assertions in individual tests. Business-specific assertions remain in the test scenarios where they provide additional value.
+
+## 📦 Test Data Management
+
+The project avoids unnecessary dependencies on pre-existing data.
+
+Dynamic users and products are generated through factories, while custom commands are used to prepare reusable scenarios.
+
+This approach helps prevent failures caused by:
+
+- Reset or changes in the test environment
+- Previously created records
+- Duplicated data
+- Tests running in a different order
+
+## 🧱 Code Organization
+
+- **Pages:** encapsulate UI interactions and page behavior.
+- **Locators:** centralize UI selectors.
+- **API:** centralizes REST API requests.
+- **Factories:** generate reusable and dynamic test data.
+- **Schemas:** define API response contracts.
+- **Validators:** provide reusable validation logic.
+- **Commands:** encapsulate common Cypress operations.
+- **E2E:** contains tests separated by application layer and purpose.
+
+## 📌 What This Project Demonstrates
+
+This project demonstrates practical experience with:
+
+- Cypress E2E automation
+- API automation with Cypress
+- Page Object Model
+- REST API testing
+- Positive and negative test scenarios
+- Dynamic test data generation
+- Authentication and authorization testing
+- JSON Schema validation
+- Custom Cypress commands
+- Test isolation and data independence
+- Retry-ability and synchronization
+- Maintainable test architecture
+
+## 👨‍💻 Author & Contact
+
+**Vagner Carmo**  
+Software QA Analyst | CTFL
+
+- 💼 LinkedIn: [Vagner Carmo](https://www.linkedin.com/in/vagner-do-carmo/)
+- 💻 GitHub: [vagner-carmo](https://github.com/vagner-carmo)
 
 ---
 
-## Validação de Schema
-
-As respostas da API são validadas utilizando JSON Schema através da biblioteca AJV, garantindo que o contrato da API permaneça consistente.
-
----
-
-## Organização do código
-
-O projeto foi organizado com foco em escalabilidade e manutenção.
-
-* **Pages:** encapsulam as ações e validações das páginas.
-* **Locators:** centralizam os seletores dos elementos.
-* **API:** centraliza todas as chamadas REST.
-* **Factories:** responsáveis pela geração de dados para os testes.
-* **Schemas:** armazenam os contratos JSON utilizados nas validações.
-* **Validators:** encapsulam validações reutilizáveis.
-
----
-
-## Autor
-
-Desenvolvido por **Vagner Macedo do Carmo**.
+This project is continuously evolving as new automation scenarios and framework improvements are added.
